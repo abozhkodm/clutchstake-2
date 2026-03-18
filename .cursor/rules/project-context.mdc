@@ -1,0 +1,17 @@
+---
+description: Project knowledge base — always read docs/ folder for context
+alwaysApply: true
+---
+
+# Project Context
+
+Before working on any task, read the relevant files from the `docs/` folder to understand the project:
+
+- `docs/overview.md` — what the project is, audience, key features, tech stack
+- `docs/architecture.md` — system architecture, monorepo structure, services
+- `docs/features/` — feature descriptions and flows
+- `docs/api/` — API contracts
+- `docs/decisions/` — architectural decision records (ADRs)
+
+Always reference this documentation when making architectural decisions or implementing features.
+When the user describes something new, suggest updating the relevant doc file.
