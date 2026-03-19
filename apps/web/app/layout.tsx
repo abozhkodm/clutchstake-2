@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import type { ReactNode } from 'react';
-import { EmotionProvider } from './_providers/EmotionProvider';
+import { Providers } from './_providers/Providers';
 import './globals.css';
 
 const geistSans = localFont({
@@ -25,7 +25,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
       <body>
-        <EmotionProvider>{children}</EmotionProvider>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

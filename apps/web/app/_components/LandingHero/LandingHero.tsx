@@ -1,3 +1,5 @@
+'use client';
+
 import { Button } from '@repo/ui/Button';
 import {
   Actions,
