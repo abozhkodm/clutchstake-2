@@ -1,0 +1,42 @@
+---
+description: Git workflow — commit after each completed feature
+alwaysApply: true
+---
+
+# Git Workflow
+
+After completing each feature or meaningful chunk of work, create a git commit.
+
+## Commit format
+
+```
+<type>: <short summary>
+
+<bullet list of what was done>
+```
+
+**Types:** `feat`, `fix`, `refactor`, `chore`, `docs`
+
+## What to include in the description
+
+- List the key files/modules created or changed
+- Mention architectural decisions if non-obvious (e.g. "Steam OpenID manually — Fastify-compatible")
+- Note any migrations, build changes, or config fixes
+
+## Example
+
+```
+feat: add AuthModule — Steam OpenID + JWT
+
+- Steam OpenID flow implemented manually (no passport-steam, Fastify-compatible)
+- JwtStrategy via passport-jwt, JwtAuthGuard with @Public() decorator
+- @CurrentUser() param decorator
+- UsersModule: createOrUpdate on Steam login
+```
+
+## When to commit
+
+- After each module or feature is complete and TypeScript compiles clean
+- After fixing a non-trivial bug
+- After any migration or config change that affects the project setup
+- At the end of every working session (update docs/plan.md first)
