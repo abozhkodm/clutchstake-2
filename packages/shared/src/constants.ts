@@ -1,0 +1,9 @@
+export const SWITCH_FEE_BASE_MULTIPLIER = 0.1;
+export const SWITCH_FEE_PER_MINUTE_MULTIPLIER = 1.1;
+export const SWITCH_FEE_FINAL_TWO_MINUTES_FLAT = 0.5;
+export const PLATFORM_COMMISSION_RATE = 0.1;
+
+export const FINAL_TWO_MINUTES_THRESHOLD = 2;
+
+export const MAX_BET_USDT = 5000;
+export const MIN_BET_USDT = 0.1;

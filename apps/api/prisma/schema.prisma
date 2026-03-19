@@ -1,0 +1,144 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Enums ────────────────────────────────────────────────────────────────────
+
+enum Pool {
+  A
+  B
+  C
+}
+
+enum RoundStatus {
+  WAITING
+  ACTIVE
+  FINISHED
+}
+
+enum TransactionType {
+  DEPOSIT
+  WITHDRAWAL
+  STAKE
+  PRIZE
+  FEE
+  REFUND
+}
+
+enum TransactionStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+enum BetType {
+  ONE_USDT
+  FIVE_USDT
+  CUSTOM
+}
+
+enum GameDuration {
+  FIVE
+  TEN
+  FIFTEEN
+}
+
+// ─── Models ───────────────────────────────────────────────────────────────────
+
+model User {
+  id        String   @id @default(uuid())
+  steamId   String   @unique
+  username  String
+  avatar    String?
+  balance   Decimal  @default(0) @db.Decimal(18, 8)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  stakes       Stake[]
+  transactions Transaction[]
+  chatMessages ChatMessage[]
+
+  @@map("users")
+}
+
+model GameRoom {
+  id              String       @id @default(uuid())
+  duration        GameDuration
+  betType         BetType
+  customBetAmount Decimal?     @db.Decimal(18, 8)
+  status          RoundStatus  @default(WAITING)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  rounds Round[]
+
+  @@map("game_rooms")
+}
+
+model Round {
+  id         String      @id @default(uuid())
+  gameRoomId String
+  winnerPool Pool?
+  status     RoundStatus @default(WAITING)
+  startedAt  DateTime?
+  endedAt    DateTime?
+  createdAt  DateTime    @default(now())
+
+  gameRoom GameRoom @relation(fields: [gameRoomId], references: [id])
+  stakes   Stake[]
+
+  @@map("rounds")
+}
+
+model Stake {
+  id           String   @id @default(uuid())
+  userId       String
+  roundId      String
+  pool         Pool
+  originalPool Pool
+  amount       Decimal  @db.Decimal(18, 8)
+  switchFee    Decimal  @default(0) @db.Decimal(18, 8)
+  switchCount  Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user  User  @relation(fields: [userId], references: [id])
+  round Round @relation(fields: [roundId], references: [id])
+
+  @@unique([userId, roundId])
+  @@map("stakes")
+}
+
+model Transaction {
+  id        String            @id @default(uuid())
+  userId    String
+  type      TransactionType
+  amount    Decimal           @db.Decimal(18, 8)
+  status    TransactionStatus @default(PENDING)
+  txHash    String?
+  meta      Json?
+  createdAt DateTime          @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([createdAt])
+  @@map("transactions")
+}
+
+model ChatMessage {
+  id        String   @id @default(uuid())
+  userId    String
+  content   String   @db.VarChar(500)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([createdAt])
+  @@map("chat_messages")
+}

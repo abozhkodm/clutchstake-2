@@ -1,0 +1,96 @@
+---
+description: Frontend conventions for ClutchStake — Emotion styling, component structure, types
+globs: apps/web/**/*.{ts,tsx},packages/ui/**/*.{ts,tsx}
+alwaysApply: false
+---
+
+# Frontend Conventions
+
+## Styling — Emotion only, no Tailwind
+
+```tsx
+// ❌ BAD — Tailwind
+<div className="flex items-center gap-4 bg-gray-900 rounded-lg p-4">
+
+// ✅ GOOD — Emotion via component.styled.ts
+<Container>
+  <Content>
+```
+
+## Folder-based components with `component.styled.ts`
+
+```
+components/
+  PoolCard/
+    PoolCard.tsx              ← JSX only, imports from .styled.ts
+    PoolCard.styled.ts        ← all Emotion styles
+    PoolCard.types.ts         ← interfaces/types (if non-trivial)
+    index.ts                  ← re-export
+```
+
+```ts
+// PoolCard.styled.ts
+import styled from '@emotion/styled';
+
+export const Root = styled.div`
+  background: #1a1a2e;
+  border-radius: 12px;
+  padding: 16px;
+`;
+
+export const Title = styled.h3`
+  font-size: 14px;
+  color: #a0a0b0;
+`;
+```
+
+```tsx
+// PoolCard.tsx
+import { Root, Title } from './PoolCard.styled';
+import type { PoolCardProps } from './PoolCard.types';
+
+export function PoolCard({ pool, playerCount }: PoolCardProps) {
+  return (
+    <Root>
+      <Title>{pool} site</Title>
+    </Root>
+  );
+}
+```
+
+## Keep business logic out of JSX
+
+```tsx
+// ❌ BAD — logic inside JSX
+<button onClick={() => {
+  if (balance < amount) return;
+  dispatch({ type: 'STAKE', pool, amount });
+}}>
+
+// ✅ GOOD — handler extracted
+function useBetPanel() {
+  const handleStake = useCallback(() => {
+    if (balance < amount) return;
+    dispatch({ type: 'STAKE', pool, amount });
+  }, [balance, amount, pool, dispatch]);
+
+  return { handleStake };
+}
+```
+
+## Move types out of component files
+
+```tsx
+// ❌ BAD — inline in component file
+interface Props { pool: Pool; playerCount: number; }
+
+// ✅ GOOD — in PoolCard.types.ts or imported from @repo/shared
+import type { Pool } from '@repo/shared';
+export interface PoolCardProps { pool: Pool; playerCount: number; }
+```
+
+## Prefer reusable presentational components
+
+- UI components in `packages/ui/` — no business logic, no API calls
+- Page-level components in `apps/web/` — compose UI components + data fetching
+- Use TanStack Query for server state, never fetch in components directly
